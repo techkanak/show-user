@@ -1,7 +1,6 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
-import 'package:show_user/api/api.dart';
+import 'package:http/http.dart' as http;
 
 void main() {
   runApp(MyApp());
@@ -29,20 +28,17 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   void initState() {
-    _showuser();
+    showuser();
     super.initState();
   }
 
-  var user = [];
- String page="1";
-
-  Future _showuser() async {
-    var res = await CallApi().getData("users?page="+page);
-    var body = json.decode(res.body);
-    setState(() {
-      user = body["data"];
-      print(user);
-    });
+//   var user = [];
+  String page = "1";
+  String url = "https://reqres.in/api/users";
+  Future showuser() async {
+    final response = await http.get(Uri.parse(url));
+    var body = json.decode(response.body);
+    print(body);
   }
 
   @override
@@ -50,41 +46,21 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       appBar: AppBar(
         title: Text("users"),
-        actions: <Widget>[
-          IconButton(
-            icon: Icon(Icons.arrow_back_ios),
-            onPressed: () {
-              setState(() {
-                page="1";
-                _showuser();
-              });
-            },
-          ),
-          IconButton(
-            icon: Icon(Icons.arrow_forward_ios),
-            onPressed: () {
-              setState(() {
-                page="2";
-                _showuser();
-              });
-            },
-          ),
-        ],
       ),
-      body: user.length == 0
-          ? Center(child: Text("no user"))
-          : ListView.builder(
-              itemCount: user.length,
-              itemBuilder: (context, index) {
-                return ListTile(
-                  leading: CircleAvatar(
-                      backgroundImage: NetworkImage(user[index]['avatar'])),
-                  title: Text(user[index]['first_name'] +
-                      " " +
-                      user[index]['last_name']),
-                  subtitle: Text(user[index]['email']),
-                );
-              }),
+      // body: user.length == 0
+      //     ? Center(child: Text("no user"))
+      //     : ListView.builder(
+      //         itemCount: user.length,
+      //         itemBuilder: (context, index) {
+      //           return ListTile(
+      //             leading: CircleAvatar(
+      //                 backgroundImage: NetworkImage(user[index]['avatar'])),
+      //             title: Text(user[index]['first_name'] +
+      //                 " " +
+      //                 user[index]['last_name']),
+      //             subtitle: Text(user[index]['email']),
+      //           );
+      //         }),
     );
   }
 }
